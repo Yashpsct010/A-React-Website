@@ -1,44 +1,40 @@
-const User = require("../models/user-model")
+const User = require("../models/user-model");
 
-const home = async(req,res)=>{
-    try{
-        res.send("welcome to home")
+const home = async (req, res) => {
+  try {
+    res.send("welcome to home");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const register = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { username, email, phone, password } = req.body;
+
+    const userExist = await User.findOne({ email: email });
+
+    if (userExist) {
+      return res.status(400).json({ msg: "email already exists" });
     }
-    catch(error){
-        console.log(error)
-    }
-}
 
-const register = async(req,res)=>{
-    try{
-        console.log(req.body);
-        const { username, email, phone, password } = req.body;
-    
-        const userExist = await User.findOne({ email: email });
-    
-        if (userExist) {
-          return res.status(400).json({ msg: "email already exists" });
-        }
-    
-        const userCreated = await User.create({ username, email, phone, password });
-    
-        // res.status(201).json({ message: "User registered successfully" });
-        res.status(201).json({ 
-            msg: userCreated,
-            token: await userCreated.generateToken(),
-            userId: userCreated._id.toString(), 
-        });
-        
-      }
-    catch(error){
-        console.log(error)
-    }
-}
+    const userCreated = await User.create({ username, email, phone, password });
 
+    // res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({
+      msg: userCreated,
+      token: await userCreated.generateToken(),
+      userId: userCreated._id.toString(),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-const login = async(req,res)=>{
-    try{
-        const { email, password } = req.body;
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
     const userExist = await User.findOne({ email });
 
@@ -58,9 +54,20 @@ const login = async(req,res)=>{
     } else {
       res.status(401).json({ message: "Invalid email or password " });
     }
+  } catch (error) {
+    console.log(error);
   }
-    catch(error){
-        console.log(error)
-    }
-}
-module.exports = {home,register,login}
+};
+
+const user = async (req, res) => {
+  try {
+    // const userData = await User.find({});
+    const userData = req.user;
+    console.log(userData);
+    return res.status(200).json({ userData });
+  } catch (error) {
+    console.log(` error from user route ${error}`);
+  }
+};
+
+module.exports = { home, register, login, user };

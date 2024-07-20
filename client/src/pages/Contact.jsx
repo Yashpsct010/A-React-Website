@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../store/auth";
 
 export const Contact = () => {
   const [contact, setContact] = useState({
@@ -7,6 +8,17 @@ export const Contact = () => {
     message: "",
   });
 
+  const [userData, setUserData] = useState(true);
+
+  const { user } = useAuth();
+  if (userData && user) {
+    setContact({
+      username: user.username,
+      email: user.email,
+      message: "",
+    });
+    setUserData(false);
+  }
   // lets tackle our handleInput
   const handleInput = (e) => {
     const name = e.target.name;
@@ -33,7 +45,7 @@ export const Contact = () => {
       if (response.ok) {
         const responseData = await response.json();
         alert("Message send successfully!!");
-        setContact({ username: "", email: "", message:"" });
+        setContact({ username: "", email: "", message: "" });
         console.log(responseData);
       } else {
         console.log("error inside response ", "error");
@@ -53,7 +65,11 @@ export const Contact = () => {
         {/* contact page main  */}
         <div className="container grid grid-two-cols">
           <div className="contact-img">
-            <img style={{backgroundColor:"-moz-initial"}} src="/images/support.png" alt="we are always ready to help" />
+            <img
+              style={{ backgroundColor: "-moz-initial" }}
+              src="/images/support.png"
+              alt="we are always ready to help"
+            />
           </div>
 
           {/* contact form content actual  */}
